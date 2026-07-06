@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>CAD 2026 • B&Q</title>
+  <link rel="icon" href="/static/logo_bq.png">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+  <style>
+    :root{
+      --bg:#061532; --bg2:#0a2353; --card:rgba(9,28,67,.84); --card2:rgba(15,43,96,.92);
+      --text:#f8fafc; --muted:#b8c6de; --line:rgba(255,255,255,.14);
+      --accent:#f97316; --accent2:#ffb15f; --ok:#22c55e; --danger:#fb7185;
+      --shadow:0 22px 70px rgba(0,0,0,.42);
+    }
+    *{box-sizing:border-box}
+    html{min-height:100%}
+    body{margin:0;min-height:100%;font-family:Inter,system-ui,Segoe UI,Arial,sans-serif;background:radial-gradient(circle at top left,rgba(249,115,22,.20),transparent 28%),linear-gradient(135deg,#06132f 0%,#082456 52%,#041126 100%);color:var(--text)}
+    body:before{content:"";position:fixed;inset:0;background:url('/static/banner_bq.png') top center/cover no-repeat;opacity:.16;pointer-events:none;filter:saturate(1.05)}
+    body:after{content:"";position:fixed;inset:0;background:linear-gradient(180deg,rgba(4,10,25,.15),rgba(4,10,25,.76));pointer-events:none}
+    header,main{position:relative;z-index:1}
+    header{padding:24px 30px 20px;border-bottom:1px solid var(--line);background:rgba(5,18,44,.68);backdrop-filter:blur(14px)}
+    .top{display:flex;gap:20px;align-items:flex-end;justify-content:space-between;flex-wrap:wrap}
+    .brand{display:flex;align-items:center;gap:17px;min-width:300px}.logo{width:76px;height:76px;border-radius:22px;object-fit:cover;box-shadow:0 18px 48px rgba(0,0,0,.48);border:1px solid rgba(255,255,255,.20)}
+    .badge{display:inline-flex;align-items:center;gap:8px;border:1px solid rgba(249,115,22,.48);background:linear-gradient(135deg,rgba(249,115,22,.22),rgba(255,177,95,.10));color:#fed7aa;border-radius:999px;padding:7px 13px;font-size:12px;font-weight:800;letter-spacing:.3px;text-transform:uppercase}
+    .sub{color:var(--muted);margin-top:7px;max-width:720px}.title h1{margin:7px 0 0;font-size:clamp(28px,4vw,48px);line-height:1;letter-spacing:-1.35px}
+    .filters{display:flex;gap:10px;flex-wrap:wrap;justify-content:flex-end}.filters select,.filters input{background:rgba(4,15,38,.82);color:var(--text);border:1px solid var(--line);border-radius:14px;padding:12px 13px;min-width:156px;outline:none;box-shadow:inset 0 1px rgba(255,255,255,.04)}
+    .filters select:focus,.filters input:focus{border-color:rgba(249,115,22,.82);box-shadow:0 0 0 4px rgba(249,115,22,.12)}
+    main{padding:20px 30px 36px;max-width:1500px;margin:auto}.grid{display:grid;grid-template-columns:repeat(4,minmax(160px,1fr));gap:15px}.kpi{position:relative;overflow:hidden;background:linear-gradient(180deg,var(--card2),rgba(7,22,54,.92));border:1px solid var(--line);border-radius:24px;padding:19px;box-shadow:var(--shadow)}
+    .kpi:before{content:"";position:absolute;right:-38px;top:-38px;width:118px;height:118px;border-radius:50%;background:rgba(255,255,255,.055)}.kpi small{display:block;color:var(--muted);font-size:12px;font-weight:800;text-transform:uppercase;letter-spacing:.35px}.kpi b{display:block;font-size:29px;margin-top:10px;letter-spacing:-.8px}.kpi.main{border-color:rgba(249,115,22,.72);background:linear-gradient(160deg,rgba(249,115,22,.24),rgba(14,39,88,.95) 46%,rgba(7,22,54,.95));box-shadow:0 22px 70px rgba(249,115,22,.12)}.kpi.main b{color:#fed7aa;font-size:33px}
+    .panel{background:var(--card);border:1px solid var(--line);border-radius:28px;padding:19px;margin-top:17px;box-shadow:var(--shadow);backdrop-filter:blur(10px)}.panel-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:12px}.panel h2{margin:0;font-size:18px;letter-spacing:-.25px}.hint{color:var(--muted);font-size:12px}.big{height:460px}.medium{height:380px}.single{display:grid;grid-template-columns:1fr;gap:16px}
+    table{width:100%;border-collapse:separate;border-spacing:0;font-size:13px}th,td{border-bottom:1px solid var(--line);padding:11px 12px;text-align:left;white-space:nowrap}th{color:#fed7aa;background:rgba(16,43,98,.96);position:sticky;top:0;z-index:2;font-size:12px;text-transform:uppercase;letter-spacing:.25px}td{color:#eaf1ff}tbody tr:hover td{background:rgba(255,255,255,.045)}.table-wrap{overflow:auto;max-height:430px;border-radius:18px;border:1px solid var(--line);background:rgba(3,11,29,.22)}
+    canvas{filter:drop-shadow(0 10px 24px rgba(0,0,0,.16))}
+    @media(max-width:1050px){.grid{grid-template-columns:repeat(2,1fr)}.big{height:390px}.medium{height:350px}.top{align-items:flex-start}.filters{justify-content:flex-start}}
+    @media(max-width:620px){main,header{padding-left:14px;padding-right:14px}.grid{grid-template-columns:1fr}.filters>*{width:100%}.logo{width:60px;height:60px}.brand{min-width:0}.panel{border-radius:22px;padding:14px}.big,.medium{height:330px}}
+  </style>
+</head>
+<body>
+<header>
+  <div class="top">
+    <div class="brand">
+      <img class="logo" src="/static/logo_bq.png" alt="B&Q">
+      <div class="title">
+        <span class="badge">CAD 2026 • B&Q</span>
+        <h1>Programação: Hortolandia</h1>
+        <div class="sub">Programado x executado acumulado, perdas por motivo e valor executado sem duplicar nota.</div>
+      </div>
+    </div>
+    <div class="filters">
+      <select id="equipe"><option value="">Todas as equipes</option></select>
+      <select id="area"><option value="">Todas as áreas</option></select>
+      <input id="inicio" type="date" />
+      <input id="fim" type="date" />
+    </div>
+  </div>
+</header>
+<main>
+  <section class="grid">
+    <div class="kpi main"><small>Valor executado</small><b id="valorExec">-</b></div>
+    <div class="kpi"><small>US programado</small><b id="usProg">-</b></div>
+    <div class="kpi"><small>Valor programado</small><b id="usExec">-</b></div>
+    <div class="kpi"><small>Obras executadas</small><b id="obras">-</b></div>
+  </section>
+
+  <section class="panel">
+    <div class="panel-head"><h2>Programado x executado acumulado</h2><span class="hint">Valores em R$ • linha do executado some de hoje pra frente</span></div>
+    <div class="big"><canvas id="jacare"></canvas></div>
+  </section>
+
+  <section class="single">
+    <div class="panel">
+      <div class="panel-head"><h2>Perda por motivo</h2><span class="hint">Ranking por US perdido</span></div>
+      <div class="medium"><canvas id="perdas"></canvas></div>
+    </div>
+  </section>
+
+  <section class="panel">
+    <div class="panel-head"><h2>Apontamentos recentes</h2><span class="hint">Últimos 100 apontamentos</span></div>
+    <div class="table-wrap"><table id="tabela"></table></div>
+  </section>
+</main>
+<script>
+let charts = {};
+const fmt = new Intl.NumberFormat('pt-BR', {maximumFractionDigits: 2});
+const moeda = new Intl.NumberFormat('pt-BR', {style:'currency', currency:'BRL'});
+Chart.defaults.color = '#dbeafe';
+Chart.defaults.borderColor = 'rgba(255,255,255,.12)';
+Chart.defaults.font.family = 'Inter, system-ui, Segoe UI, Arial, sans-serif';
+
+function destroy(name){ if(charts[name]) charts[name].destroy(); }
+function params(){ const p = new URLSearchParams(); ['equipe','area','inicio','fim'].forEach(id=>{ const v=document.getElementById(id).value; if(v) p.set(id,v); }); return p.toString(); }
+async function load(){ const res = await fetch('/api/dashboard?' + params()); const data = await res.json(); fillFilters(data.filtros); renderKpi(data.kpi); renderJacare(data.series); renderPerdas(data.perdas); renderTable(data.linhas); }
+function fillFilters(f){ fillSelect('equipe', f.equipes); fillSelect('area', f.areas); }
+function fillSelect(id, arr){ const el=document.getElementById(id), current=el.value; const first=el.options[0].outerHTML; el.innerHTML = first + arr.map(v=>`<option value="${String(v).replaceAll('"','&quot;')}">${v}</option>`).join(''); el.value=current; }
+function setText(id, value){ const el = document.getElementById(id); if(el) el.textContent = value; }
+function renderKpi(k){
+  setText('obras', fmt.format(k.obras_apontadas || 0));
+  setText('usProg', fmt.format(k.us_planejado || 0));
+  // O card que antes era US executado continua com id usExec para não quebrar o JS/cache,
+  // mas agora mostra Valor programado em R$.
+  setText('usExec', moeda.format(k.valor_planejado || 0));
+  setText('valorProg', moeda.format(k.valor_planejado || 0));
+  setText('valorExec', moeda.format(k.valor_executado || 0));
+}
+function renderJacare(rows){
+  destroy('jacare');
+  const hoje = new Date();
+  hoje.setHours(0,0,0,0);
+  const executadoAteOntem = rows.map(r=>{
+    if(!r.DATA_ISO) return r['VALOR EXEC'];
+    const d = new Date(r.DATA_ISO + 'T00:00:00');
+    return d >= hoje ? null : r['VALOR EXEC'];
+  });
+  charts.jacare = new Chart(document.getElementById('jacare'), {type:'line', data:{labels: rows.map(r=>r.DATA_LABEL || r.DATA), datasets:[
+    {label:'R$ programado acumulado', data:rows.map(r=>r['VALOR PROG']), tension:.32, fill:true, borderWidth:4, pointRadius:3, pointHoverRadius:6, borderColor:'#60a5fa', backgroundColor:'rgba(96,165,250,.10)'},
+    {label:'R$ executado acumulado', data:executadoAteOntem, tension:.32, fill:false, borderWidth:4, pointRadius:3, pointHoverRadius:6, spanGaps:false, borderColor:'#f97316', backgroundColor:'#f97316'}
+  ]}, options:{responsive:true, maintainAspectRatio:false, interaction:{mode:'index',intersect:false}, plugins:{legend:{labels:{usePointStyle:true}}, tooltip:{callbacks:{label:(ctx)=> ctx.dataset.label + ': ' + moeda.format(ctx.parsed.y)}}}, scales:{x:{grid:{color:'rgba(255,255,255,.08)'}}, y:{beginAtZero:true, grid:{color:'rgba(255,255,255,.10)'}}}}});
+}
+function renderPerdas(rows){
+  destroy('perdas');
+  charts.perdas = new Chart(document.getElementById('perdas'), {type:'bar', data:{labels: rows.map(r=>r.MOTIVO_PERDA), datasets:[{label:'US perdido', data:rows.map(r=>r.perda_us), borderRadius:10, backgroundColor:'rgba(249,115,22,.82)', borderColor:'#ffb15f', borderWidth:1}]}, options:{indexAxis:'y', responsive:true, maintainAspectRatio:false, plugins:{legend:{display:false}, tooltip:{callbacks:{afterLabel:(ctx)=> 'Valor perdido: '+moeda.format(rows[ctx.dataIndex].perda_valor)}}}, scales:{x:{beginAtZero:true,grid:{color:'rgba(255,255,255,.10)'}}, y:{grid:{display:false}}}}});
+}
+function renderEquipes(rows){}
+function renderTable(rows){ const cols=['DATA','EQUIPE','Nº NOTA','AREA','US PLANEJADO','US EXECUTADO','VALOR EXEC','PERDA_US','MOTIVO_PERDA','OBS.']; tabela.innerHTML='<thead><tr>'+cols.map(c=>`<th>${c}</th>`).join('')+'</tr></thead><tbody>'+rows.map(r=>'<tr>'+cols.map(c=>`<td>${c==='VALOR EXEC'?moeda.format(r[c]||0):(r[c]??'')}</td>`).join('')+'</tr>').join('')+'</tbody>'; }
+['equipe','area','inicio','fim'].forEach(id=>document.getElementById(id).addEventListener('change', load));
+load();
+</script>
+</body>
+</html>
